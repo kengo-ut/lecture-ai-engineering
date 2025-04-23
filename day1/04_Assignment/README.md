@@ -22,7 +22,7 @@ Supabaseを使用して、ユーザーのセッション情報を管理します
    uv sync
    ```
 
-2. `back`ディレクトリで`front/.env`を作成し、以下の環境変数を設定する
+2. `back`ディレクトリで`.env`を作成し、以下の環境変数を設定する
 
    ```
    LLM_MODEL_NAME="SakanaAI/TinySwallow-1.5B-Instruct"

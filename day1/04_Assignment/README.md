@@ -22,7 +22,20 @@ Supabaseを使用して、ユーザーのセッション情報を管理します
    uv sync
    ```
 
-2. `back`ディレクトリで以下のコマンドを実行し、開発サーバーを立ち上げる
+2. `back`ディレクトリで`front/.env`を作成し、以下の環境変数を設定する
+
+   ```
+   LLM_MODEL_NAME="SakanaAI/TinySwallow-1.5B-Instruct"
+   LLM_MAX_NEW_TOKENS=1024
+   SUPABASE_URL=<your_supabase_url>
+   SUPABASE_KEY=<your_supabase_key>
+   ```
+   - `SUPABASE_URL`と`SUPABASE_KEY`は、[Supabase](https://supabase.com/)のプロジェクトから取得できます。
+   - `LLM_MODEL_NAME`は、使用するLLMモデルの名前です。
+   - `LLM_MAX_NEW_TOKENS`は、LLMモデルが生成する最大トークン数です。
+   - `LLM_MODEL_NAME`と`LLM_MAX_NEW_TOKENS`は、必要に応じて変更してください。
+
+3. `back`ディレクトリで以下のコマンドを実行し、開発サーバーを立ち上げる
    ```bash
    make dev
    ```
@@ -42,7 +55,7 @@ Supabaseを使用して、ユーザーのセッション情報を管理します
    yarn
    ```
 
-3. `front`ディレクトリで`front/.env.local`を作成し、以下の環境変数を設定する
+3. `front`ディレクトリで`.env.local`を作成し、以下の環境変数を設定する
 
    ```
    NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000

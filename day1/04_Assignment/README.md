@@ -5,7 +5,7 @@ Supabaseを使用して、ユーザーのセッション情報を管理します
 
 ## デモ画像
 
-![demo](/images/demo.png)
+![demo](./images/demo.png)
 
 ## 環境構築
 
@@ -58,7 +58,7 @@ Supabaseを使用して、ユーザーのセッション情報を管理します
 
 ### ER 図
 
-![ER](/images/er.png)
+![ER](./images/er.png)
 
 ### TODO
 

@@ -84,7 +84,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen max-w-full overflow-hidden">
       {/* セッションサイドバー */}
       <SessionSidebar
         sessions={sessions}
@@ -96,7 +96,7 @@ export default function ChatPage() {
       />
 
       {/* チャットインターフェース */}
-      <div className="flex-1 flex flex-col h-screen pt-4">
+      <div className="flex-1 flex flex-col h-screen pt-4 max-w-full">
         {activeSession ? (
           <ChatInterface
             sessionId={activeSession.session_id}
@@ -132,7 +132,7 @@ export default function ChatPage() {
               className="mt-2"
             />
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex flex-col-reverse items-stretch gap-2 sm:flex-row sm:justify-end sm:items-center sm:gap-0">
             <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
               キャンセル
             </Button>

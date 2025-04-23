@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Menu, Send } from "lucide-react";
 import MessageItem from "@/components/MessageItem";
 import {
@@ -16,6 +15,7 @@ import {
 import { Message } from "@/gen/schema";
 import { v4 as uuidv4 } from "uuid";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface ChatInterfaceProps {
   sessionId: string;
@@ -51,7 +51,7 @@ export default function ChatInterface({ sessionId, title, toggleSidebar }: ChatI
     if (!loading) {
       inputRef.current?.focus();
     }
-  }, [loading]);
+  }, [loading, sessionId]);
 
   // 新しいメッセージが追加されたときに自動スクロール
   useEffect(() => {
@@ -107,8 +107,8 @@ export default function ChatInterface({ sessionId, title, toggleSidebar }: ChatI
       </div>
 
       <div className="flex-1 overflow-hidden p-4">
-        <Card className="h-full flex flex-col">
-          <ScrollArea className="flex-1 p-4">
+        <Card className="h-full flex flex-col max-w-full">
+          <div className="flex-1 p-4 max-w-full overflow-y-auto">
             {messages.length === 0 ? (
               <div className="h-full flex items-center justify-center text-center p-8 text-muted-foreground">
                 <div>
@@ -117,14 +117,28 @@ export default function ChatInterface({ sessionId, title, toggleSidebar }: ChatI
                 </div>
               </div>
             ) : (
-              <div className="space-y-4 pb-4">
+              <div className="flex flex-col space-y-4 overflow-x-hidden">
                 {messages.map((message) => (
                   <MessageItem key={message.message_id} message={message} />
                 ))}
+                {loading && (
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-destructive text-white">A</AvatarFallback>
+                    </Avatar>
+                    <div className="rounded-lg p-3 max-w-[80%] bg-destructive text-white">
+                      <div className="flex gap-2 items-center justify-center h-5">
+                        <span className="animate-bounce delay-0 w-2 h-2 rounded-full bg-white opacity-60" />
+                        <span className="animate-bounce delay-150 w-2 h-2 rounded-full bg-white opacity-60" />
+                        <span className="animate-bounce delay-300 w-2 h-2 rounded-full bg-white opacity-60" />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div ref={lastElementRef} />
               </div>
             )}
-          </ScrollArea>
+          </div>
 
           <Separator className="mb-6" />
 

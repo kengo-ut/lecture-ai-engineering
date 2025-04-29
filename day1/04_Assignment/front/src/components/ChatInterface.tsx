@@ -21,9 +21,10 @@ interface ChatInterfaceProps {
   sessionId: string;
   title: string;
   toggleSidebar: () => void;
+  sidebarOpen: boolean;
 }
 
-export default function ChatInterface({ sessionId, title, toggleSidebar }: ChatInterfaceProps) {
+export default function ChatInterface({ sessionId, title, toggleSidebar, sidebarOpen }: ChatInterfaceProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -48,7 +49,7 @@ export default function ChatInterface({ sessionId, title, toggleSidebar }: ChatI
 
   // フォーム送信後inputにフォーカスする
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !sidebarOpen) {
       inputRef.current?.focus();
     }
   }, [loading, sessionId]);

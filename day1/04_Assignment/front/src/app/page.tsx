@@ -27,11 +27,13 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newSessionTitle, setNewSessionTitle] = useState("");
+  const [isMd, setIsMd] = useState(false);
 
   // 画面サイズの監視
   useEffect(() => {
     const checkScreenSize = () => {
       setSidebarOpen(window.innerWidth >= 768);
+      setIsMd(window.innerWidth >= 768);
     };
 
     checkScreenSize();
@@ -102,7 +104,7 @@ export default function ChatPage() {
             sessionId={activeSession.session_id}
             title={activeSession.title}
             toggleSidebar={toggleSidebar}
-            sidebarOpen={sidebarOpen}
+            isMd={isMd}
           />
         ) : (
           <div className="flex-1 flex items-center justify-center p-8 text-center">

@@ -24,7 +24,12 @@ interface ChatInterfaceProps {
   isMd: boolean;
 }
 
-export default function ChatInterface({ sessionId, title, toggleSidebar, isMd }: ChatInterfaceProps) {
+export default function ChatInterface({
+  sessionId,
+  title,
+  toggleSidebar,
+  isMd,
+}: ChatInterfaceProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);

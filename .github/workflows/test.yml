@@ -1,8 +1,8 @@
 name: ML Pipeline CI
 
 on:
-  push:
-    branches: [ develop ]
+  # push:
+  #   branches: [ develop ]
   pull_request:
     branches: [ main, master ]
 
@@ -32,6 +32,6 @@ jobs:
       run: |
         black --check day5/演習2
         
-    - name: Test inference time and accuracy
+    - name: Run pytest on main.py
       run: |
         pytest day5/演習2/main.py -v

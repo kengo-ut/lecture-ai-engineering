@@ -3,6 +3,7 @@ import pickle
 import time
 
 import great_expectations as gx
+import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
@@ -304,6 +305,28 @@ def test_inference_time_and_accuracy_against_baseline():
         "推論時間が遅くなっています: "
         f"{new_metrics['inference_time']} > {baseline_metrics['inference_time']}"
     )
+
+
+def test_model_reproducibility():
+    """同じランダムシードでモデル結果が再現されることを確認"""
+    # データ準備
+    data = DataLoader.load_titanic_data()
+    X, y = DataLoader.preprocess_titanic_data(data)
+    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # 同じシードでモデルを学習
+    random_state = 42
+    model1_params = {"n_estimators": 100, "random_state": random_state}
+    model2_params = {"n_estimators": 100, "random_state": random_state}
+    model1 = ModelTester.train_model(X_train, y_train, model1_params)
+    model2 = ModelTester.train_model(X_train, y_train, model2_params)
+
+    preds1 = model1.predict(X_train)
+    preds2 = model2.predict(X_train)
+
+    assert np.array_equal(
+        preds1, preds2
+    ), f"モデルの予測結果が異なります。再現性がありません: {preds1} != {preds2}"
 
 
 if __name__ == "__main__":

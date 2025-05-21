@@ -1,15 +1,17 @@
 import os
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
 import pickle
 import time
+
 import great_expectations as gx
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
 
 class DataLoader:
     """データロードを行うクラス"""
@@ -22,8 +24,9 @@ class DataLoader:
         else:
             # ローカルのファイル
             local_path = "data/Titanic.csv"
-            if os.path.exists(local_path):
-                return pd.read_csv(local_path)
+            full_path = os.path.join(os.path.dirname(__file__), local_path)
+            if os.path.exists(full_path):
+                return pd.read_csv(full_path)
 
     @staticmethod
     def preprocess_titanic_data(data):
@@ -186,7 +189,7 @@ class ModelTester:
     def save_model(model, path="models/titanic_model.pkl"):
         model_dir = "models"
         os.makedirs(model_dir, exist_ok=True)
-        model_path = os.path.join(model_dir, f"titanic_model.pkl")
+        model_path = os.path.join(model_dir, "titanic_model.pkl")
         with open(model_path, "wb") as f:
             pickle.dump(model, f)
         return path
@@ -194,7 +197,8 @@ class ModelTester:
     @staticmethod
     def load_model(path="models/titanic_model.pkl"):
         """モデルを読み込む"""
-        with open(path, "rb") as f:
+        full_path = os.path.join(os.path.dirname(__file__), path)
+        with open(full_path, "rb") as f:
             model = pickle.load(f)
         return model
 
@@ -246,6 +250,60 @@ def test_model_performance():
     assert (
         metrics["inference_time"] < 1.0
     ), f"推論時間が長すぎます: {metrics['inference_time']}秒"
+
+
+def test_model_overfitting():
+    """訓練とテスト精度の差が大きすぎないか確認"""
+    # データ準備
+    data = DataLoader.load_titanic_data()
+    X, y = DataLoader.preprocess_titanic_data(data)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    # モデル学習
+    model = ModelTester.train_model(X_train, y_train)
+
+    # 評価
+    train_acc = ModelTester.evaluate_model(model, X_train, y_train)["accuracy"]
+    test_acc = ModelTester.evaluate_model(model, X_test, y_test)["accuracy"]
+
+    # 訓練とテスト精度の差が大きすぎないか確認 (過学習の可能性)
+    assert (
+        abs(train_acc - test_acc) < 0.2
+    ), f"過学習の可能性あり: train={train_acc}, test={test_acc}"
+
+
+def test_inference_time_and_accuracy_against_baseline():
+    """新しいモデルの精度と推論時間をベースラインと比較"""
+    # データ準備
+    data = DataLoader.load_titanic_data()
+    X, y = DataLoader.preprocess_titanic_data(data)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    # 新モデルの学習と評価
+    new_model_params = {"n_estimators": 50, "random_state": 42}
+    new_model = ModelTester.train_model(X_train, y_train, new_model_params)
+    new_metrics = ModelTester.evaluate_model(new_model, X_test, y_test)
+
+    # ベースライン読み込み
+    baseline_model = ModelTester.load_model()
+    baseline_metrics = ModelTester.evaluate_model(baseline_model, X_test, y_test)
+
+    # 精度の比較
+    acc_diff = new_metrics["accuracy"] - baseline_metrics["accuracy"]
+    assert (
+        acc_diff >= -0.01
+    ), f"精度が劣化しています: {new_metrics['accuracy']} < {baseline_metrics['accuracy']}"
+
+    # 推論時間の比較
+    time_diff = new_metrics["inference_time"] - baseline_metrics["inference_time"]
+    assert time_diff <= 0.001, (
+        "推論時間が遅くなっています: "
+        f"{new_metrics['inference_time']} > {baseline_metrics['inference_time']}"
+    )
 
 
 if __name__ == "__main__":
